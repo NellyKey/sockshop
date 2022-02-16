@@ -1,0 +1,88 @@
+name: .NET Core CI
+
+on:
+  push:
+    branches: [ dev ]
+  pull_request:
+    branches: [ dev ]
+
+defaults:
+  run:
+    working-directory: ./
+env:
+  DEFAULT_VERSION_CHART: 0.1.1
+
+jobs:
+  helm-chart:
+    runs-on:
+      - self-hosted
+      - Linux
+
+    needs: build
+
+    container:
+      image: quay.io/roboll/helmfile:v0.142.0
+
+    env:
+      HELM_EXPERIMENTAL_OCI: 1
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Get short sha
+        uses: benjlevesque/short-sha@v1.2
+        id: short-sha
+        with:
+          length: 7
+
+      - name: Lint Helm chart
+        env:
+          SHORT_SHA: ${{ steps.short-sha.outputs.sha }}
+        run: |
+          APP_RAW=${{ github.event.repository.name }}
+          APP=$(echo "$APP_RAW" | awk '{print tolower($0)}')
+          echo "APP=${APP}" > $GITHUB_ENV
+          sed -i "s/version\:.*/version\: ${DEFAULT_VERSION_CHART}-${SHORT_SHA}/" .helm/${APP}/Chart.yaml
+          sed -i "s/appVersion\:.*/appVersion\: ${DEFAULT_VERSION_CHART}-${SHORT_SHA}/" .helm/${APP}/Chart.yaml
+          helm lint ./.helm/${APP}
+
+      # - name: Get tag name
+      #   uses: little-core-labs/get-git-tag@v3.0.1
+      #   id: tag-name
+
+      - name: Push Helm chart
+        env:
+          SHORT_SHA: ${{ steps.short-sha.outputs.sha }}
+        run: |
+          helm package ./.helm/${APP}
+          rm ${APP}-${DEFAULT_VERSION_CHART}-${SHORT_SHA}.tgz
+
+  deploy-stage:
+    needs: helm-chart
+    runs-on:
+      - self-hosted
+      - Linux
+
+    container:
+      image: quay.io/roboll/helmfile:v0.142.0
+
+    env:
+      HELM_EXPERIMENTAL_OCI: 1
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Get short sha
+        uses: benjlevesque/short-sha@v1.2
+        id: short-sha
+        with:
+          length: 7
+      - name: deploy
+        env:
+          SHORT_SHA: ${{ steps.short-sha.outputs.sha }}
+        run: |
+#          echo ${{ secrets.KUBE_CONFIG_STAGE }} | base64 -d > ~/CONFIG
+#          export KUBECONFIG=~/CONFIG
+          helmfile -f .helm/helmfile.yaml -e stage --state-values-set CHARTS_REPO_SECRET=${{ secrets.CHARTS_REPO_SECRET }},CHART_TAG=${DEFAULT_VERSION_CHART}-${SHORT_SHA} lint
+#          helmfile -f .helm/helmfile.yaml -e stage --state-values-set CHARTS_REPO_SECRET=${{ secrets.CHARTS_REPO_SECRET }},CHART_TAG=${DEFAULT_VERSION_CHART}-${SHORT_SHA} sync

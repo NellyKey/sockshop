@@ -1,0 +1,23 @@
+helmDefaults:
+  wait: true
+  atomic: true
+  timeout: 300
+
+repositories:
+  - url: registry.otus.io/arm/
+    name: otus
+    username: 'robot$arm+chat'
+    password: '{{ .Values.CHARTS_REPO_SECRET }}'
+    oci: true
+
+environments:
+  stage:
+
+releases:
+  - name: sockshop-{{ .Environment.Name }}
+    namespace: sockshop-{{ .Environment.Name }}
+    version: {{ .Values.CHART_TAG }}
+    createNamespace: false
+    chart: sockshop
+    values:
+      - ./{{ .Environment.Name }}/values.yaml.gotmpl
