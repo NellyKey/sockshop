@@ -18,8 +18,6 @@ jobs:
       - self-hosted
       - Linux
 
-    needs: build
-
     container:
       image: quay.io/roboll/helmfile:v0.142.0
 
