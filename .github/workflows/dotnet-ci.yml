@@ -73,16 +73,18 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+
       - name: Get short sha
         uses: benjlevesque/short-sha@v1.2
         id: short-sha
         with:
           length: 7
+
       - name: deploy
         env:
           SHORT_SHA: ${{ steps.short-sha.outputs.sha }}
         run: |
+          helmfile -f .helm/helmfile.yaml -e stage --state-values-set CHARTS_REPO_SECRET=${{ secrets.CHARTS_REPO_SECRET }},CHART_TAG=${DEFAULT_VERSION_CHART}-${SHORT_SHA} lint
 #          echo ${{ secrets.KUBE_CONFIG_STAGE }} | base64 -d > ~/CONFIG
 #          export KUBECONFIG=~/CONFIG
-          helmfile -f .helm/helmfile.yaml -e stage --state-values-set CHARTS_REPO_SECRET=${{ secrets.CHARTS_REPO_SECRET }},CHART_TAG=${DEFAULT_VERSION_CHART}-${SHORT_SHA} lint
 #          helmfile -f .helm/helmfile.yaml -e stage --state-values-set CHARTS_REPO_SECRET=${{ secrets.CHARTS_REPO_SECRET }},CHART_TAG=${DEFAULT_VERSION_CHART}-${SHORT_SHA} sync
