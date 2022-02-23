@@ -86,3 +86,4 @@ jobs:
 #          echo ${{ secrets.KUBE_CONFIG_STAGE }} | base64 -d > ~/CONFIG
 #          export KUBECONFIG=~/CONFIG
 #          helmfile -f .helm/helmfile.yaml -e stage --state-values-set CHARTS_REPO_SECRET=${{ secrets.CHARTS_REPO_SECRET }},CHART_TAG=${DEFAULT_VERSION_CHART}-${SHORT_SHA} sync
+#
