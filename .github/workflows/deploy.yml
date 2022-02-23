@@ -63,40 +63,8 @@ jobs:
           echo "APP=${APP}" > $GITHUB_ENV
           echo ${{ secrets.KUBECONFIG }} 
           echo ${{ secrets.KUBECONFIG }} | base64 -d > ~/CONFIG 
-#          echo ${{ secrets.KUBE_CONFIG_STAGE }} | base64 -d > ~/CONFIG
-#          helmfile -f .helm/helmfile.yaml -e stage --state-values-set CHART_TAG=${DEFAULT_VERSION_CHART}-${SHORT_SHA} lint
+##          echo ${{ secrets.KUBE_CONFIG_STAGE }} | base64 -d > ~/CONFIG
+#\          helmfile -f .helm/helmfile.yaml -e stage --state-values-set CHART_TAG=${DEFAULT_VERSION_CHART}-${SHORT_SHA} lint
 #          echo ${{ secrets.KUBE_CONFIG_STAGE }} | base64 -d > ~/CONFIG
 #          export KUBECONFIG=~/CONFIG
 #          helmfile -f .helm/helmfile.yaml -e stage --state-values-set CHART_TAG=${DEFAULT_VERSION_CHART}-${SHORT_SHA} sync
-
-
-  deploy-stage:
-    needs: helm-chart
-    runs-on:
-      - ubuntu-latest
-
-    container:
-      image: quay.io/roboll/helmfile:v0.142.0
-
-    env:
-      HELM_EXPERIMENTAL_OCI: 1
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: Get short sha
-        uses: benjlevesque/short-sha@v1.2
-        id: short-sha
-        with:
-          length: 7
-
-      - name: deploy
-        env:
-          SHORT_SHA: ${{ steps.short-sha.outputs.sha }}
-        run: |
-          ls        
-#          helmfile -f .helm/helmfile.yaml -e stage --state-values-set CHARTS_REPO_SECRET=${{ secrets.CHARTS_REPO_SECRET }},CHART_TAG=${DEFAULT_VERSION_CHART}-${SHORT_SHA} lint
-#          echo ${{ secrets.KUBE_CONFIG_STAGE }} | base64 -d > ~/CONFIG
-#          export KUBECONFIG=~/CONFIG
-#          helmfile -f .helm/helmfile.yaml -e stage --state-values-set CHARTS_REPO_SECRET=${{ secrets.CHARTS_REPO_SECRET }},CHART_TAG=${DEFAULT_VERSION_CHART}-${SHORT_SHA} sync
