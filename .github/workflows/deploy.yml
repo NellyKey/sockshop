@@ -65,10 +65,14 @@ jobs:
           touch ${SECRET}       
           ls
           echo ${SECRET}
-          helmfile -f .helm/helmfile.yaml -e stage --state-values-set CHART_TAG=${DEFAULT_VERSION_CHART}-${SHORT_SHA} lint
+          echo ${{ secrets.TestSecret }}
+          echo ${{ secrets.TestSecret }} > testfile
+          cat testfile
           echo ${{ secrets.KUBE_CONFIG_STAGE }} | base64 -d > ~/CONFIG
-          export KUBECONFIG=~/CONFIG
-          helmfile -f .helm/helmfile.yaml -e stage --state-values-set CHART_TAG=${DEFAULT_VERSION_CHART}-${SHORT_SHA} sync
+#          helmfile -f .helm/helmfile.yaml -e stage --state-values-set CHART_TAG=${DEFAULT_VERSION_CHART}-${SHORT_SHA} lint
+#          echo ${{ secrets.KUBE_CONFIG_STAGE }} | base64 -d > ~/CONFIG
+#          export KUBECONFIG=~/CONFIG
+#          helmfile -f .helm/helmfile.yaml -e stage --state-values-set CHART_TAG=${DEFAULT_VERSION_CHART}-${SHORT_SHA} sync
 
 
   deploy-stage:
