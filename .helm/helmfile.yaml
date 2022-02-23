@@ -4,9 +4,9 @@ helmDefaults:
   timeout: 300
 
 repositories:
-  - url: registry.otus.io/arm/
+  - url: registry.otus.io/sockshop/
     name: otus
-    username: 'robot$arm+chat'
+    username: 'robot$sockshop'
     password: '{{ .Values.CHARTS_REPO_SECRET }}'
     oci: true
 

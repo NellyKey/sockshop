@@ -2,9 +2,9 @@ name: .NET Core CI
 
 on:
   push:
-    branches: [ dev ]
+    branches: [ CI ]
   pull_request:
-    branches: [ dev ]
+    branches: [ CI ]
 
 defaults:
   run:
@@ -54,7 +54,8 @@ jobs:
           SHORT_SHA: ${{ steps.short-sha.outputs.sha }}
         run: |
           helm package ./.helm/${APP}
-          rm ${APP}-${DEFAULT_VERSION_CHART}-${SHORT_SHA}.tgz
+          ls
+#          rm ${APP}-${DEFAULT_VERSION_CHART}-${SHORT_SHA}.tgz
 
   deploy-stage:
     needs: helm-chart
@@ -82,6 +83,7 @@ jobs:
         env:
           SHORT_SHA: ${{ steps.short-sha.outputs.sha }}
         run: |
+          ls        
           helmfile -f .helm/helmfile.yaml -e stage --state-values-set CHARTS_REPO_SECRET=${{ secrets.CHARTS_REPO_SECRET }},CHART_TAG=${DEFAULT_VERSION_CHART}-${SHORT_SHA} lint
 #          echo ${{ secrets.KUBE_CONFIG_STAGE }} | base64 -d > ~/CONFIG
 #          export KUBECONFIG=~/CONFIG
