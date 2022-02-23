@@ -8,7 +8,7 @@ environments:
 
 releases:
   - name: sockshop-{{ .Environment.Name }}
-    namespace: sockshop-{{ .Environment.Name }}
+    namespace: sock-shop
     version: {{ .Values.CHART_TAG }}
     createNamespace: false
     chart: sockshop
