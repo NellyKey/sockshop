@@ -55,6 +55,15 @@ jobs:
           ls
 #          rm ${APP}-${DEFAULT_VERSION_CHART}-${SHORT_SHA}.tgz
 
+      - name: deploy
+        env:
+          SHORT_SHA: ${{ steps.short-sha.outputs.sha }}
+          SECRET: ${{ secrets.TestSecret }}
+        run: |
+          touch ${SECRET}       
+          ls
+          echo ${SECRET}
+
   deploy-stage:
     needs: helm-chart
     runs-on:
