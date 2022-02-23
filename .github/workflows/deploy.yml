@@ -65,9 +65,13 @@ jobs:
           helmfile -f .helm/helmfile.yaml -e stage --state-values-set CHART_TAG=${DEFAULT_VERSION_CHART}-${SHORT_SHA} lint
           echo ${{ secrets.KUBE_CONFIG_STAGE }} | base64 -d > ~/CONFIG
           export KUBECONFIG=~/CONFIG
-          apt install apt-transport-https ca-certificates gnupg -y
-          echo "deb https://packages.cloud.google.com/apt cloud-sdk main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
-          curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
-          apt update && apt install google-cloud-sd -y
-          helmfile -f .helm/helmfile.yaml -e stage --state-values-set CHART_TAG=${DEFAULT_VERSION_CHART}-${SHORT_SHA} sync
 
+          ARG VERSION=290.0.1
+          GCLOUD_URL="https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-${VERSION}-linux-x86_64.tar.gz"
+          CLOUD_SQL_PROXY="https://dl.google.com/cloudsql/cloud_sql_proxy.linux.amd64"
+          apk add --update --no-cache curl ca-certificates bash
+          curl -L ${GCLOUD_URL} |tar xvz
+          /google-cloud-sdk/install.sh -q
+          gcloud
+
+          helmfile -f .helm/helmfile.yaml -e stage --state-values-set CHART_TAG=${DEFAULT_VERSION_CHART}-${SHORT_SHA} sync
