@@ -64,7 +64,7 @@ jobs:
           echo ${{ secrets.TestSecret }}
           echo ${{ secrets.TestSecret }} > testfile
           cat testfile
-#          echo ${{ secrets.KUBECONFIG }} 
+          echo ${{ secrets.KUBE_CONFIG_STAGE }} 
 #          echo ${{ secrets.KUBECONFIG }} | base64 -d > ~/CONFIG 
 #          echo ${{ secrets.KUBE_CONFIG_STAGE }} | base64 -d > ~/CONFIG
 #          helmfile -f .helm/helmfile.yaml -e stage --state-values-set CHART_TAG=${DEFAULT_VERSION_CHART}-${SHORT_SHA} lint
