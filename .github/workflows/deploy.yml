@@ -58,17 +58,13 @@ jobs:
       - name: deploy
         env:
           SHORT_SHA: ${{ steps.short-sha.outputs.sha }}
-          SECRET: ${{ secrets.TestSecret }}
         run: |
           APP=sockshop
-          echo "APP=${APP}" > $GITHUB_ENV        
-          touch ${SECRET}       
-          ls
-          echo ${SECRET}
+          echo "APP=${APP}" > $GITHUB_ENV
           echo ${{ secrets.TestSecret }}
           echo ${{ secrets.TestSecret }} > testfile
           cat testfile
-          echo ${{ secrets.KUBE_CONFIG_STAGE }} | base64 -d > ~/CONFIG
+#          echo ${{ secrets.KUBE_CONFIG_STAGE }} | base64 -d > ~/CONFIG
 #          helmfile -f .helm/helmfile.yaml -e stage --state-values-set CHART_TAG=${DEFAULT_VERSION_CHART}-${SHORT_SHA} lint
 #          echo ${{ secrets.KUBE_CONFIG_STAGE }} | base64 -d > ~/CONFIG
 #          export KUBECONFIG=~/CONFIG
