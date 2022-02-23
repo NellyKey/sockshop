@@ -15,8 +15,7 @@ env:
 jobs:
   helm-chart:
     runs-on:
-      - self-hosted
-      - Linux
+      - ubuntu-latest
 
     container:
       image: quay.io/roboll/helmfile:v0.142.0
@@ -38,8 +37,7 @@ jobs:
         env:
           SHORT_SHA: ${{ steps.short-sha.outputs.sha }}
         run: |
-          APP_RAW=${{ github.event.repository.name }}
-          APP=$(echo "$APP_RAW" | awk '{print tolower($0)}')
+          APP=sockshop
           echo "APP=${APP}" > $GITHUB_ENV
           sed -i "s/version\:.*/version\: ${DEFAULT_VERSION_CHART}-${SHORT_SHA}/" .helm/${APP}/Chart.yaml
           sed -i "s/appVersion\:.*/appVersion\: ${DEFAULT_VERSION_CHART}-${SHORT_SHA}/" .helm/${APP}/Chart.yaml
@@ -60,8 +58,7 @@ jobs:
   deploy-stage:
     needs: helm-chart
     runs-on:
-      - self-hosted
-      - Linux
+      - ubuntu-latest
 
     container:
       image: quay.io/roboll/helmfile:v0.142.0

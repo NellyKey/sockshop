@@ -1,6 +1,11 @@
 # Default values for sock-shop.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
+global:
+    registry: ''
+
+istio:
+    enabled: false
 
 catalogue:
     image:
@@ -15,5 +20,53 @@ catalogue:
             cpu: 100m
             memory: 100Mi
 
-appSettings:
-    keyOne: "ValueOne"
+zipkincron:
+    image:
+        repo: openzipkin/zipkin-dependencies
+        tag: 1.4.0
+    resources:
+        limits:
+            cpu: 300m
+            memory: 1000Mi
+        requests:
+            cpu: 100m
+            memory: 300Mi
+
+zipkin:
+    image:
+        repo: openzipkin/zipkin
+        tag: 2.21
+    resources:
+        limits:
+            cpu: 300m
+            memory: 1000Mi
+        requests:
+            cpu: 100m
+            memory: 300Mi
+    enabled:  false
+    url: zipkin.zipkin.svc.cluster.local
+
+zipkinmysql:
+    image:
+        repo: openzipkin/zipkin-mysql
+        tag: 1.20.0
+    resources:
+        requests:
+            memory: 256Mi
+            cpu: 250m
+        limits:
+            memory: 768Mi
+            cpu: 1
+
+carts:
+    image:
+        repo: weaveworksdemos/carts
+        tag: 0.4.8
+    containerPort: 80
+    resources:
+        limits:
+            cpu: 300m
+            memory: 2000Mi
+        requests:
+            cpu: 300m
+            memory: 2000Mi
