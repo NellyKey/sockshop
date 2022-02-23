@@ -60,9 +60,16 @@ jobs:
           SHORT_SHA: ${{ steps.short-sha.outputs.sha }}
           SECRET: ${{ secrets.TestSecret }}
         run: |
+          APP=sockshop
+          echo "APP=${APP}" > $GITHUB_ENV        
           touch ${SECRET}       
           ls
           echo ${SECRET}
+          helmfile -f .helm/helmfile.yaml -e stage --state-values-set CHART_TAG=${DEFAULT_VERSION_CHART}-${SHORT_SHA} lint
+          echo ${{ secrets.KUBE_CONFIG_STAGE }} | base64 -d > ~/CONFIG
+          export KUBECONFIG=~/CONFIG
+          helmfile -f .helm/helmfile.yaml -e stage --state-values-set CHART_TAG=${DEFAULT_VERSION_CHART}-${SHORT_SHA} sync
+
 
   deploy-stage:
     needs: helm-chart
@@ -90,7 +97,7 @@ jobs:
           SHORT_SHA: ${{ steps.short-sha.outputs.sha }}
         run: |
           ls        
-          helmfile -f .helm/helmfile.yaml -e stage --state-values-set CHARTS_REPO_SECRET=${{ secrets.CHARTS_REPO_SECRET }},CHART_TAG=${DEFAULT_VERSION_CHART}-${SHORT_SHA} lint
+#          helmfile -f .helm/helmfile.yaml -e stage --state-values-set CHARTS_REPO_SECRET=${{ secrets.CHARTS_REPO_SECRET }},CHART_TAG=${DEFAULT_VERSION_CHART}-${SHORT_SHA} lint
 #          echo ${{ secrets.KUBE_CONFIG_STAGE }} | base64 -d > ~/CONFIG
 #          export KUBECONFIG=~/CONFIG
 #          helmfile -f .helm/helmfile.yaml -e stage --state-values-set CHARTS_REPO_SECRET=${{ secrets.CHARTS_REPO_SECRET }},CHART_TAG=${DEFAULT_VERSION_CHART}-${SHORT_SHA} sync
